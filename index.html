@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Live Chart with 7 Days ROI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            background-color: #222;
+            color: #DDD;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #363b38;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            margin-top: 0px;
+            color: #ffffff;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background-color: #585858;
+            color: #ffffff;
+            padding: 16px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .button:last-child {
+            margin-right: 0;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        #tvchart {
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+
+        #legend {
+            text-align: left;
+            margin-top: 10px;
+            color: #ffffff;
+        }
+
+        #legend span {
+            font-weight: bold;
+            color: #4caf50;
+        }
+
+        .crypto-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            width: 200px;
+            height: auto;
+            text-align: center;
+            background-color: #312f2f;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            margin-top: 20px;
+            margin-right: 20px; /* Add margin between cards */
+        }
+
+        #cryptoCards,
+        #roiCards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start; /* Start flex items from the left */
+        }
+
+        .crypto-card:hover {
+            box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+        }
+
+        .crypto-card h2 {
+            color: #ffffff;
+            margin-top: 0;
+        }
+
+        .roi {
+            font-size: 18px;
+            color: #007bff;
+            margin-top: 10px;
+        }
+
+        .header {
+            margin-top: 50px;
+        }
+    </style>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Live Cryptocurrency Chart</h2>
+
+        <div class="button-group" style="display: flex; align-items: center;">
+            <button class="button" id="btc"><i class="fa fa-bitcoin"
+                    style="font-size:18px;color:rgb(255, 230, 0)"></i> BTC</button>
+
+            <button class="button" id="eth" style="display: flex; align-items: center;">
+                <svg class="svg-icon" style="width: 1.2em; height: 1.2em; vertical-align: middle; fill: currentColor; overflow: hidden; margin-right: 5px;"
+                    viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M815.8 521.6L512 707.2 208 521.6 512 0l303.8 521.6zM512 766.8L208 581.2 512 1024l304-442.8-304 185.6z"
+                        fill="" />
+                </svg>
+                <span>ETH</span>
+            </button>
+
+            <button class="button" id="sol" style="display: flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 508.07 398.17"
+                    style="width: 20px; height: 20px; margin-right: 5px;">
+                    <defs>
+                        <style>.cls-1{fill:url(#linear-gradient);}.cls-2{fill:url(#linear-gradient-2);}.cls-3{fill:url(#linear-gradient-3);}</style>
+                        <linearGradient id="linear-gradient" x1="463" y1="205.16" x2="182.39" y2="742.62"
+                            gradientTransform="translate(0 -198)" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" stop-color="#00ffa3" /><stop offset="1" stop-color="#dc1fff" />
+                        </linearGradient>
+                        <linearGradient id="linear-gradient-2" x1="340.31" y1="141.1" x2="59.71" y2="678.57"
+                            xlink:href="#linear-gradient" />
+                        <linearGradient id="linear-gradient-3" x1="401.26" y1="172.92" x2="120.66" y2="710.39"
+                            xlink:href="#linear-gradient" />
+                    </defs>
+                    <path class="cls-1" d="M84.53,358.89A16.63,16.63,0,0,1,96.28,354H501.73a8.3,8.3,0,0,1,5.87,14.18l-80.09,80.09a16.61,16.61,0,0,1-11.75,4.86H10.31A8.31,8.31,0,0,1,4.43,439Z"
+                        transform="translate(-1.98 -55)" />
+                    <path class="cls-2" d="M84.53,59.85A17.08,17.08,0,0,1,96.28,55H501.73a8.3,8.3,0,0,1,5.87,14.18l-80.09,80.09a16.61,16.61,0,0,1-11.75,4.86H10.31A8.31,8.31,0,0,1,4.43,140Z"
+                        transform="translate(-1.98 -55)" />
+                    <path class="cls-3"
+                        d="M427.51,208.42a16.61,16.61,0,0,0-11.75-4.86H10.31a8.31,8.31,0,0,0-5.88,14.18l80.1,80.09a16.6,16.6,0,0,0,11.75,4.86H501.73a8.3,8.3,0,0,0,5.87-14.18Z"
+                        transform="translate(-1.98 -55)" />
+                </svg>
+                <span>SOL</span>
+            </button>
+        </div>
+
+
+        <div class="button-group">
+            <button class="button" id="interval-1m">1 Minute</button>
+            <button class="button" id="interval-1h">1 Hour</button>
+            <button class="button" id="interval-1d">1 Day</button>
+        </div>
+        <div id="legend">Time Frame: <span id="timeFrame"></span> Crypto: <span id="crypto"></span></div>
+        <div id="tvchart"></div>
+
+        <h2 class="header">7 Days Returns of Cryptocurrencies</h2>
+        <div id="cryptoCards"></div>
+
+        <h2 class="header">One Month and One Year Returns</h2>
+        <div id="roiCards"></div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const chartProperties = {
+                width: 800,
+                height: 400,
+                timeScale: {
+                    timeVisible: true,
+                    secondsVisible: false,
+                },
+                layout: {
+                    background: { color: '#222' },
+                    textColor: '#DDD',
+                },
+                grid: {
+                    vertLines: { color: '#444' },
+                    horzLines: { color: '#444' },
+                },
+            };
+
+            const domElement = document.getElementById('tvchart');
+            const chart = LightweightCharts.createChart(domElement, chartProperties);
+            const candleSeries = chart.addCandlestickSeries();
+
+            let selectedSymbol = 'BTC';
+            let selectedInterval = '1m';
+
+            function fetchData(symbol, interval) {
+                fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}USDT&interval=${interval}&limit=1000`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const cdata = data.map(d => {
+                            return {
+                                time: d[0] / 1000,
+                                open: parseFloat(d[1]),
+                                high: parseFloat(d[2]),
+                                low: parseFloat(d[3]),
+                                close: parseFloat(d[4])
+                            }
+                        });
+                        candleSeries.setData(cdata);
+                        document.getElementById('timeFrame').innerText = interval;
+                        document.getElementById('crypto').innerText = symbol;
+                    })
+                    .catch(err => console.error(err))
+            }
+
+            fetchData(selectedSymbol, selectedInterval);
+
+            document.getElementById('btc').addEventListener('click', function () {
+                selectedSymbol = 'BTC';
+                fetchData(selectedSymbol, selectedInterval);
+            });
+
+            document.getElementById('eth').addEventListener('click', function () {
+                selectedSymbol = 'ETH';
+                fetchData(selectedSymbol, selectedInterval);
+            });
+
+            document.getElementById('sol').addEventListener('click', function () {
+                selectedSymbol = 'SOL';
+                fetchData(selectedSymbol, selectedInterval);
+            });
+
+            document.getElementById('interval-1m').addEventListener('click', function () {
+                selectedInterval = '1m';
+                fetchData(selectedSymbol, selectedInterval);
+            });
+
+            document.getElementById('interval-1h').addEventListener('click', function () {
+                selectedInterval = '1h';
+                fetchData(selectedSymbol, selectedInterval);
+            });
+
+            document.getElementById('interval-1d').addEventListener('click', function () {
+                selectedInterval = '1d';
+                fetchData(selectedSymbol, selectedInterval);
+            });
+
+            const cryptoSymbols = ['BTC', 'ETH', 'SOL'];
+
+
+            function calculateROI() {
+                cryptoSymbols.forEach(symbol => {
+                    const apiUrl = `https://api.binance.com/api/v3/klines?symbol=${symbol}USDT&interval=1d&limit=7`;
+
+                    fetch(apiUrl)
+                        .then(response => response.json())
+                        .then(data => {
+                            const startPrice = parseFloat(data[0][1]);
+                            const endPrice = parseFloat(data[6][4]);
+
+                            const roi = ((endPrice - startPrice) / startPrice) * 100;
+                            const roiColor = roi >= 0 ? 'blue' : 'red';
+
+                            const cryptoCard = `
+                                <div class="crypto-card">
+                                    <h2>${symbol}</h2>
+                                    <p class="roi" style="color: ${roiColor};">${roi.toFixed(2)}%</p>
+                                </div>
+                            `;
+
+                            document.getElementById('cryptoCards').innerHTML += cryptoCard;
+                        })
+                        .catch(error => {
+                            console.error(`Error fetching data for ${symbol}:`, error);
+                            const cryptoCard = `
+                                <div class="crypto-card">
+                                    <h2>${symbol}</h2>
+                                    <p class="roi">Error fetching data </p>
+                                </div>
+                            `;
+
+                            document.getElementById('cryptoCards').innerHTML += cryptoCard;
+                        });
+                });
+            }
+            calculateROI();
+
+
+            function calculateMonthYearROI() {
+                cryptoSymbols.forEach(symbol => {
+                    const apiUrlMonth = `https://api.binance.com/api/v3/klines?symbol=${symbol}USDT&interval=1d&limit=30`;
+
+                    fetch(apiUrlMonth)
+                        .then(response => response.json())
+                        .then(data => {
+                            const startPriceMonth = parseFloat(data[0][1]);
+                            const endPriceMonth = parseFloat(data[29][4]);
+
+                            const roiMonth = ((endPriceMonth - startPriceMonth) / startPriceMonth) * 100;
+                            const roiMonthColor = roiMonth >= 0 ? 'blue' : 'red';
+
+                            const apiUrlYear = `https://api.binance.com/api/v3/klines?symbol=${symbol}USDT&interval=1d&limit=365`;
+
+                            fetch(apiUrlYear)
+                                .then(response => response.json())
+                                .then(data => {
+                                    const startPriceYear = parseFloat(data[0][1]);
+                                    const endPriceYear = parseFloat(data[364][4]);
+
+                                    const roiYear = ((endPriceYear - startPriceYear) / startPriceYear) * 100;
+                                    const roiYearColor = roiYear >= 0 ? 'blue' : 'red';
+
+                                    const roiCard = `
+                                        <div class="crypto-card">
+                                            <h2>${symbol}</h2>
+                                            <p class="roi" style="color: white;">1 Month: <span style="color: ${roiMonthColor}; font-weight: bold;">${roiMonth.toFixed(2)}%</span></p>
+                                            <p class="roi" style="color: white;">&nbsp;&nbsp;&nbsp;1 Year: <span style="color: ${roiYearColor}; font-weight: bold;">${roiYear.toFixed(2)}%</span></p>
+                                        </div>
+                                    `;
+
+                                    document.getElementById('roiCards').innerHTML += roiCard;
+                                })
+                                .catch(error => {
+                                    console.error(`Error fetching data for ${symbol} (One Year ROI):`, error);
+                                });
+                        })
+                        .catch(error => {
+                            console.error(`Error fetching data for ${symbol} (One Month ROI):`, error);
+                        });
+                });
+            }
+            calculateMonthYearROI();
+        });
+    </script>
+
+
+</body>
+</html>
